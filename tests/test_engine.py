@@ -2,6 +2,7 @@ import chess
 import pytest
 from src.engine import get_best_move
 from src.engine import analyse_position
+from src.engine import StockfishEngine
 
 START_FEN = chess.STARTING_FEN
 
@@ -34,3 +35,20 @@ def test_mate_in_one_reports_mate():
     result = analyse_position(fen, depth=12)
     assert result.mate_in == 1
     assert result.best_move == "h5f7"
+
+def test_black_mate_in_one_is_negative():
+    # Black to move, Qh4# is mate
+    fen = "rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq - 0 2"
+    result = analyse_position(fen, depth=12)
+    assert result.best_move == "d8h4"
+    assert result.mate_in == -1
+
+@pytest.fixture(scope="module")
+def engine():
+    with StockfishEngine() as eng:
+        yield eng
+
+
+def test_start_position_with_fixture(engine):
+    result = engine.analyse(START_FEN, depth=12)
+    assert abs(result.centipawns) < 100
