@@ -11,6 +11,8 @@ BLACK_MATE_FEN = "rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq - 0 2"
 # Start position with Black's queen removed: White is clearly better
 WHITE_UP_QUEEN_FEN = "rnb1kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
+CHECKMATED_FEN = "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3"
+
 
 @pytest.fixture(scope="module")
 def engine():
@@ -55,3 +57,8 @@ def test_black_mate_in_one_is_negative(engine):
     result = engine.analyse(BLACK_MATE_FEN, depth=12)
     assert result.mate_in == -1
     assert result.best_move == "d8h4"
+
+
+def test_game_over_raises(engine):
+    with pytest.raises(ValueError):
+        engine.analyse(CHECKMATED_FEN)
